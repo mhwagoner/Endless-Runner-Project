@@ -5,12 +5,9 @@ class P1 extends Phaser.Physics.Arcade.Sprite {
         //this.scale = 0.75
         scene.add.existing(this)           // add P1 to existing scene
         scene.physics.add.existing(this)   // add physics body to scene
-
         this.body.setSize(this.width / 4, this.height / 4, true)
 
-        // set custom P1 properties
-        this.dashCooldown = 300    // in ms
-        this.hurtTimer = 250       // in ms
+        this.setDepth(10)
 
         // initialize state machine managing P1 (initial state, possible states, state args[])
         scene.P1FSM = new StateMachine('idle', {

@@ -5,7 +5,9 @@ class Play extends Phaser.Scene {
 
     create() {
         // add background image
-        this.map = this.add.image(0, 0, 'map').setOrigin(0)
+        this.road = this.add.image(0, -300, 'road').setOrigin(0)
+        this.road.scaleX = config.width / this.road.width
+        this.road.scaleY = config.height / (this.road.height/2)
         this.graphicsSet = this.add.graphics({
             x: 0,
             y: 0,
@@ -21,8 +23,9 @@ class Play extends Phaser.Scene {
         this.graphicsSet.fillRect(0, 0, config.width, this.skyHeight)
 
         // add new Hero to scene (scene, x, y, key, frame)
-        this.p1 = new P1(this, 150, config.height-100, 'player1', 0)
-        this.p2 = new P1(this, config.width - 150, config.height-100, 'player2', 0)
+        this.p2 = new P1(this, config.width - 200, config.height-100, 'player2', 0)
+        this.p1 = new P1(this, 200, config.height-100, 'player1', 0)
+        //can switch order of these lines later
         
         // setup keyboard input
         this.keys = this.input.keyboard.createCursorKeys()
@@ -51,14 +54,23 @@ class Play extends Phaser.Scene {
         });
 
         //Player 1 collects coins
-        /*this.physics.add.overlap(this.p1, this.coins, (p1, coin) => {
-            console.log(this.score)
-            this.score += coin.value
-            coin.destroy()
-        })*/
+        this.p1CoinOverlap = this.physics.add.overlap(this.p1, this.coins, (p1, coin) => {
+            this.PickupCoin(p1, coin)
+        }, (p1, coin) => {
+            return coin.collectible
+        })
 
         //Player 2 collects coins
-        this.physics.add.overlap(this.p2, this.coins, this.PickupCoin)
+        this.p2CoinOverlap = this.physics.add.overlap(this.p2, this.coins, (p2, coin) => {
+            this.PickupCoin(p2, coin)
+        }, (p2, coin) => {
+            return coin.collectible
+        })
+
+        //Layer ordering
+        this.mainLayer = this.add.layer()
+        //this.mainLayer.add([this.coins, this.p1, this.p2])
+        //this.mainLayer.sendToBack(this.coins)
 
     }
 
@@ -100,8 +112,8 @@ class Play extends Phaser.Scene {
     }
 
     PickupCoin(player, coin) {
+        this.score += coin.value
         console.log(this.score)
-        this.score += 1
-        //coin.destroy()
+        coin.destroy()
     }
 }

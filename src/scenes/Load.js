@@ -6,15 +6,11 @@ class Load extends Phaser.Scene {
     preload() {
         // load the visual goodz
         this.load.path = './assets/'
-        this.load.spritesheet('hero', 'hero-sheet.png', {
-            frameWidth: 32,
-            frameHeight: 32,
-        })
         this.load.spritesheet('player1', 'Temp_Spritesheet.png', {
             frameWidth: 200,
             frameHeight: 200,
         })
-        this.load.image('map', 'map-scroll.jpg')
+        this.load.image('road', 'road.jpg')
         this.load.image('coin', 'coin.jpg')
     }
 
