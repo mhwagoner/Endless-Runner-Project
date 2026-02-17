@@ -24,7 +24,6 @@ class Play extends Phaser.Scene {
         this.p1 = new P1(this, 150, config.height-100, 'player1', 0)
         this.p2 = new P1(this, config.width - 150, config.height-100, 'player2', 0)
         
-
         // setup keyboard input
         this.keys = this.input.keyboard.createCursorKeys()
         this.keys.HKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
@@ -40,6 +39,7 @@ class Play extends Phaser.Scene {
         document.getElementById('info').innerHTML = '<strong>CharacterFSM.js:</strong> Arrows: move | D: debug (toggle)'
         
         //variables
+        this.score = 0
         this.startTimer = 2000
         this.timer = this.startTimer
 
@@ -49,6 +49,17 @@ class Play extends Phaser.Scene {
             maxSize: -1,
             runChildUpdate: true,
         });
+
+        //Player 1 collects coins
+        /*this.physics.add.overlap(this.p1, this.coins, (p1, coin) => {
+            console.log(this.score)
+            this.score += coin.value
+            coin.destroy()
+        })*/
+
+        //Player 2 collects coins
+        this.physics.add.overlap(this.p2, this.coins, this.PickupCoin)
+
     }
 
     update() {
@@ -67,24 +78,30 @@ class Play extends Phaser.Scene {
     }
 
     ObjectSpawner() {
-        console.log("object spawned")
+        //console.log("object spawned")
         switch (Phaser.Math.Between(0, 2)) { //what is being spawned?
             case 0:
-                this.Coin(config.width/2, this.skyHeight)
+                this.SpawnCoin(config.width/2, this.skyHeight)
                 break
             case 1:
-                console.log("spike spawned")
-                this.Coin(config.width/2, this.skyHeight)
+                //console.log("spike spawned")
+                this.SpawnCoin(config.width/2, this.skyHeight)
                 break
             case 2:
-                console.log("clothesline spawned")
-                this.Coin(config.width/2, this.skyHeight)
+                //console.log("clothesline spawned")
+                this.SpawnCoin(config.width/2, this.skyHeight)
                 break
         }
     }
 
-    Coin(x, y, value) {
-        console.log("coin spawned")
+    SpawnCoin(x, y, value) {
+        //console.log("coin spawned")
         this.coins.add(new Coin(this, x, y, 'coin'))
+    }
+
+    PickupCoin(player, coin) {
+        console.log(this.score)
+        this.score += 1
+        //coin.destroy()
     }
 }

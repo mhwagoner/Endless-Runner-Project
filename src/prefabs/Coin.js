@@ -3,10 +3,12 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
         super(scene, x, y, texture) // call Sprite parent class
 
+        this.value = 2
         this.scale = 0.25
         scene.add.existing(this)           // add Coin to existing scene
         scene.physics.add.existing(this)   // add physics body to scene
-        this.body.setSize(this.width / 4, this.height / 4, true)
+        this.body.setCircle(this.width/4, this.width/4, this.height/4)
+        //this.body.setSize(this.width / 4, this.height / 4, true)
         this.body.enabled = false
         this.setVelocityY(50)
         
