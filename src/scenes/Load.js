@@ -11,10 +11,11 @@ class Load extends Phaser.Scene {
             frameHeight: 32,
         })
         this.load.spritesheet('player1', 'Temp_Spritesheet.png', {
-            frameWidth: 300,
-            frameHeight: 300,
+            frameWidth: 200,
+            frameHeight: 200,
         })
         this.load.image('map', 'map-scroll.jpg')
+        this.load.image('coin', 'coin.jpg')
     }
 
     create() {
