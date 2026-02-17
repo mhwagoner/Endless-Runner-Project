@@ -11,6 +11,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
 
         // set custom Coin properties
         this.setDepth(5)
+        this.position
         this.value = 2
         this.minHeight = config.height - 90
         this.collectible = true
@@ -18,29 +19,35 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityY(40)
         
         switch (Phaser.Math.Between(0, 5)) { //direction of coin movement
-            case 0: //P2's left
-                this.setVelocityX(25)
+            case 0: //P2's right
+                this.position = "right"
+                this.setVelocityX(15)
                 break
             case 1: //P2's top
-                this.minHeight = config.height - 130
-                this.setVelocityX(30)
-                this.setVelocityY(30)
-                this.x += 100
-                break
-            case 2: //P2's right
+                this.position = "top"
+                this.minHeight = config.height - 150
                 this.setVelocityX(25)
-                this.x += 200
+                //this.setVelocityY(30)
+                this.x += 35
+                break
+            case 2: //P2's left
+                this.position = "left"
+                this.setVelocityX(35)
+                this.x += 65
                 break
             case 3: //P1's right
+                this.position = "right"
                 this.setVelocityX(-15)
                 break
             case 4: //P1's top
+                this.position = "top"
                 this.minHeight = config.height - 150
                 this.setVelocityX(-25)
                 //this.setVelocityY(30)
                 this.x -= 35
                 break
             case 5: //P1's left
+                this.position = "left"
                 this.setVelocityX(-35)
                 this.x -= 65
                 break
