@@ -6,7 +6,7 @@ class Play extends Phaser.Scene {
     create() {
         // add background image
         this.road = this.add.image(0, -300, 'road').setOrigin(0)
-        this.road.scaleX = config.width / this.road.width
+        this.road.scaleX = config.width / this.road.width *1.01
         this.road.scaleY = config.height / (this.road.height/2)
         this.graphicsSet = this.add.graphics({
             x: 0,
@@ -57,6 +57,7 @@ class Play extends Phaser.Scene {
         this.p1CoinOverlap = this.physics.add.overlap(this.p1, this.coins, (p1, coin) => {
             this.PickupCoin(p1, coin)
         }, (p1, coin) => {
+            //if player is holding the right direction AND coin.collectible
             return coin.collectible
         })
 
@@ -64,6 +65,7 @@ class Play extends Phaser.Scene {
         this.p2CoinOverlap = this.physics.add.overlap(this.p2, this.coins, (p2, coin) => {
             this.PickupCoin(p2, coin)
         }, (p2, coin) => {
+            //if player is holding the right direction AND coin.collectible
             return coin.collectible
         })
 
@@ -83,7 +85,9 @@ class Play extends Phaser.Scene {
         this.timer -= this.game.loop.delta
         if (this.timer <= 0) {
             this.ObjectSpawner()
-            this.startTimer = this.startTimer -= 10
+            if (this.startTimer > 100) {
+                this.startTimer -= 100
+            }
             this.timer = this.startTimer
         };
 
