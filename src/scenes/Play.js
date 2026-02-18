@@ -58,7 +58,7 @@ class Play extends Phaser.Scene {
             this.PickupCoin(p1, coin)
         }, (p1, coin) => {
             //if player is holding the right direction AND coin.collectible
-            return coin.collectible
+            return (coin.collectible && ((coin.position === "left" && this.keys.left.isDown) || (coin.position === "right" && this.keys.right.isDown) || (coin.position === "top" && this.keys.up.isDown)))
         })
 
         //Player 2 collects coins
@@ -66,7 +66,7 @@ class Play extends Phaser.Scene {
             this.PickupCoin(p2, coin)
         }, (p2, coin) => {
             //if player is holding the right direction AND coin.collectible
-            return coin.collectible
+            return (coin.collectible && ((coin.position === "left" && this.keys.HKey.isDown) || (coin.position === "right" && this.keys.FKey.isDown) || (coin.position === "top" && this.keys.up.isDown)))
         })
 
         //Layer ordering
@@ -85,7 +85,7 @@ class Play extends Phaser.Scene {
         this.timer -= this.game.loop.delta
         if (this.timer <= 0) {
             this.ObjectSpawner()
-            if (this.startTimer > 100) {
+            if (this.startTimer > 1000) {
                 this.startTimer -= 100
             }
             this.timer = this.startTimer
