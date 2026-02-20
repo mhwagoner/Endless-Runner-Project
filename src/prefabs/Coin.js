@@ -3,7 +3,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
         super(scene, x, y, texture) // call Sprite parent class
 
-        this.scale = 0.25
+        this.scale = 0.1
         scene.add.existing(this)           // add Coin to existing scene
         scene.physics.add.existing(this)   // add physics body to scene
         this.body.setCircle(this.width/4, this.width/4, this.height/4)
@@ -11,6 +11,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
 
         // set custom Coin properties
         this.setDepth(5)
+        this.setToBack()
         this.position
         this.value = 2
         this.maxHeight = config.height - 100
@@ -28,7 +29,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
                 this.position = "top"
                 this.minHeight = config.height - 150
                 this.maxHeight = config.height - 160
-                this.setVelocityX(25)
+                this.setVelocityX(28)
                 //this.setVelocityY(30)
                 this.x += 35
                 break
@@ -45,7 +46,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
                 this.position = "top"
                 this.minHeight = config.height - 150
                 this.maxHeight = config.height - 160
-                this.setVelocityX(-25)
+                this.setVelocityX(-28)
                 //this.setVelocityY(30)
                 this.x -= 35
                 break
@@ -58,13 +59,18 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
     }
 
     update() {
-        this.scale += 0.005
+        if(this.position == "top"){
+            this.scale = (this.y + 60) / 250
+        } else {
+            this.scale = this.y / 250
+        }
         if (this.y > this.minHeight) { //if leaving collectible range
             this.setDepth(11)
             this.setTint(0xff0000)
             this.collectible = false
 
         } else if (this.y > this.maxHeight) { //if within collectible range
+            console.log(this.scale)
             this.setDepth(5)
             this.setTint(0x00ff00)
             this.collectible = true

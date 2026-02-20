@@ -77,14 +77,14 @@ class HandsState extends State {
         } else if (left.isDown && up.isDown){ //left and up
 
             P1.anims.play('hand-left-up')
-            P1.body.setOffset(0, P1.height /8)
-            P1.body.setSize(P1.width * 5/8, P1.height * 5/8, false)
+            P1.body.setOffset(0, P1.height / 4)
+            P1.body.setSize(P1.width * 5/8, P1.height / 2, false)
 
         } else if (right.isDown && up.isDown){ //right and up
 
             P1.anims.play('hand-right-up')
-            P1.body.setOffset(P1.width * 3/8, P1.height /8)
-            P1.body.setSize(P1.width * 5/8, P1.height * 5/8, false)
+            P1.body.setOffset(P1.width * 3/8, P1.height /4)
+            P1.body.setSize(P1.width * 5/8, P1.height / 2, false)
 
         } else if (left.isDown){ //left
 
@@ -101,7 +101,7 @@ class HandsState extends State {
         } else if (up.isDown){ //up
 
             P1.anims.play('hand-up')
-            P1.body.setOffset((P1.width / 2) - (P1.body.width / 2), P1.height /8)
+            P1.body.setOffset((P1.width / 2) - (P1.body.width / 2), P1.height / 4)
             P1.body.setSize(P1.width / 4, P1.height / 4, false)
 
         }
