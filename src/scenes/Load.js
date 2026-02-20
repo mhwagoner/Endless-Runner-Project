@@ -10,8 +10,9 @@ class Load extends Phaser.Scene {
             frameWidth: 200,
             frameHeight: 200,
         })
-        this.load.image('road', 'road.jpg')
+        this.load.image('road', 'road.png')
         this.load.image('coin', 'coin.jpg')
+        this.load.image('stripe', 'road_stripe.png')
     }
 
     create() {

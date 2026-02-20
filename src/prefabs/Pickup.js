@@ -1,15 +1,15 @@
-// Coin prefab
-class Coin extends Phaser.Physics.Arcade.Sprite {
+// Pickup prefab
+class Pickup extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
         super(scene, x, y, texture) // call Sprite parent class
 
         this.scale = 0.1
-        scene.add.existing(this)           // add Coin to existing scene
+        scene.add.existing(this)           // add Pickup to existing scene
         scene.physics.add.existing(this)   // add physics body to scene
         this.body.setCircle(this.width/4, this.width/4, this.height/4)
         //this.body.setSize(this.width / 4, this.height / 4, true)
 
-        // set custom Coin properties
+        // set custom Pickup properties
         this.setDepth(5)
         this.setToBack()
         this.position
@@ -20,7 +20,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
 
         this.setVelocityY(40)
         
-        switch (Phaser.Math.Between(0, 5)) { //direction of coin movement
+        switch (Phaser.Math.Between(0, 5)) { //direction of pickup movement
             case 0: //P2's left
                 this.position = "left"
                 this.setVelocityX(15)
@@ -70,7 +70,7 @@ class Coin extends Phaser.Physics.Arcade.Sprite {
             this.collectible = false
 
         } else if (this.y > this.maxHeight) { //if within collectible range
-            console.log(this.scale)
+            //console.log(this.scale)
             this.setDepth(5)
             this.setTint(0x00ff00)
             this.collectible = true

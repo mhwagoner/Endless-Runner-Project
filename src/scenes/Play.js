@@ -5,9 +5,9 @@ class Play extends Phaser.Scene {
 
     create() {
         // add background image
-        this.road = this.add.image(0, -300, 'road').setOrigin(0)
-        this.road.scaleX = config.width / this.road.width *1.01
-        this.road.scaleY = config.height / (this.road.height/2)
+        this.road = this.add.image(0, config.height / 5, 'road').setOrigin(0)
+       // this.road.scaleX = config.width / this.road.width *1.01
+        //this.road.scaleY = config.height / (this.road.height/2)
         this.graphicsSet = this.add.graphics({
             x: 0,
             y: 0,
@@ -20,7 +20,7 @@ class Play extends Phaser.Scene {
             add: true
         })
         this.skyHeight = config.height / 5
-        this.graphicsSet.fillRect(0, 0, config.width, this.skyHeight)
+        this.sky = this.graphicsSet.fillRect(0, 0, config.width, this.skyHeight)
 
         // add new Hero to scene (scene, x, y, key, frame)
         this.p2 = new P1(this, config.width - 200, config.height-100, 'player2', 0)
@@ -43,36 +43,49 @@ class Play extends Phaser.Scene {
         
         //variables
         this.score = 0
-        this.startTimer = 2000
-        this.timer = this.startTimer
+        this.stripeTimerLength = 1800
+        this.stripeTimer = this.stripeTimerLength
 
-        this.coins = this.add.group({
+        this.gaitCounter = 0
+        this.gaitMax = 359
+        
+        this.pickupTimerLength = 2000
+        this.pickupTimer = 3000
+
+        this.pickups = this.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
             active: true,
             maxSize: -1,
             runChildUpdate: true,
-        });
-
-        //Player 1 collects coins
-        this.p1CoinOverlap = this.physics.add.overlap(this.p1, this.coins, (p1, coin) => {
-            this.PickupCoin(p1, coin)
-        }, (p1, coin) => {
-            //if player is holding the right direction AND coin.collectible
-            return (coin.collectible && ((coin.position === "left" && this.keys.left.isDown) || (coin.position === "right" && this.keys.right.isDown) || (coin.position === "top" && this.keys.up.isDown)))
         })
 
-        //Player 2 collects coins
-        this.p2CoinOverlap = this.physics.add.overlap(this.p2, this.coins, (p2, coin) => {
-            this.PickupCoin(p2, coin)
-        }, (p2, coin) => {
-            //if player is holding the right direction AND coin.collectible
-            return (coin.collectible && ((coin.position === "left" && this.keys.HKey.isDown) || (coin.position === "right" && this.keys.FKey.isDown) || (coin.position === "top" && this.keys.up.isDown)))
+        this.stripes = this.add.group({
+            classType: Phaser.Physics.Sprite,
+            active: true,
+            maxSize: -1
+        })
+
+
+        //Player 1 collects pickups
+        this.p1PickupOverlap = this.physics.add.overlap(this.p1, this.pickups, (p1, pickup) => {
+            this.PickupPickup(p1, pickup)
+        }, (p1, pickup) => {
+            //if player is holding the right direction AND pickup.collectible
+            return (pickup.collectible && ((pickup.position === "left" && this.keys.left.isDown) || (pickup.position === "right" && this.keys.right.isDown) || (pickup.position === "top" && this.keys.up.isDown)))
+        })
+
+        //Player 2 collects pickups
+        this.p2PickupOverlap = this.physics.add.overlap(this.p2, this.pickups, (p2, pickup) => {
+            this.PickupPickup(p2, pickup)
+        }, (p2, pickup) => {
+            //if player is holding the right direction AND pickup.collectible
+            return (pickup.collectible && ((pickup.position === "left" && this.keys.HKey.isDown) || (pickup.position === "right" && this.keys.FKey.isDown) || (pickup.position === "top" && this.keys.up.isDown)))
         })
 
         //Layer ordering
-        this.mainLayer = this.add.layer()
-        //this.mainLayer.add([this.coins, this.p1, this.p2])
-        //this.mainLayer.sendToBack(this.coins)
+        //this.mainLayer = this.add.layer()
+        //this.mainLayer.add([this.pickups, this.p1, this.p2])
+        //this.mainLayer.sendToBack(this.pickups)
 
     }
 
@@ -82,14 +95,31 @@ class Play extends Phaser.Scene {
         this.P1FSM.step()
         this.P1FSM.step()
 
-        this.timer -= this.game.loop.delta
-        if (this.timer <= 0) {
+        this.p1.y = Math.sin(this.gaitCounter/5)*5 + config.height -95
+
+        this.pickupTimer -= this.game.loop.delta
+        if (this.pickupTimer <= 0) {
             this.ObjectSpawner()
-            if (this.startTimer > 1000) {
-                this.startTimer -= 100
+            if (this.pickupTimerLength > 1000) {
+                this.pickupTimerLength -= 50
             }
-            this.timer = this.startTimer
-        };
+            this.pickupTimer = this.pickupTimerLength
+        }
+
+        this.stripeTimer -= this.game.loop.delta
+        if (this.stripeTimer <= 0) {
+            this.StripeSpawner()
+            this.stripeTimer = this.stripeTimerLength
+        }
+
+        if(this.gaitCounter <= this.gaitMax){
+            this.gaitCounter++
+        } else {
+            this.gaitCounter = 0
+        }
+
+        //scale stripes
+        this.stripes.scaleXY(0.0005)
 
     }
 
@@ -97,27 +127,34 @@ class Play extends Phaser.Scene {
         //console.log("object spawned")
         switch (Phaser.Math.Between(0, 2)) { //what is being spawned?
             case 0:
-                this.SpawnCoin(config.width/2, this.skyHeight)
+                this.SpawnPickup(config.width/2, this.skyHeight)
                 break
             case 1:
                 //console.log("spike spawned")
-                this.SpawnCoin(config.width/2, this.skyHeight)
+                this.SpawnPickup(config.width/2, this.skyHeight)
                 break
             case 2:
                 //console.log("clothesline spawned")
-                this.SpawnCoin(config.width/2, this.skyHeight)
+                this.SpawnPickup(config.width/2, this.skyHeight)
                 break
         }
     }
 
-    SpawnCoin(x, y, value) {
-        //console.log("coin spawned")
-        this.coins.add(new Coin(this, x, y, 'coin'))
+    SpawnPickup(x, y, value) {
+        //console.log("pickup spawned")
+        this.pickups.add(new Pickup(this, x, y, 'coin'))
     }
 
-    PickupCoin(player, coin) {
-        this.score += coin.value
+    PickupPickup(player, pickup) {
+        this.score += pickup.value
         console.log(this.score)
-        coin.destroy()
+        pickup.destroy()
+    }
+
+    StripeSpawner(){
+        this.stripe = this.physics.add.sprite(config.width/2, 0, 'stripe').setBelow(this.sky)
+        this.stripe.setVelocityY(40)
+        this.stripe.scale = 0.1
+        this.stripes.add(this.stripe)
     }
 }
