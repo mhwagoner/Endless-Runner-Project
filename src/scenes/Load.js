@@ -14,6 +14,7 @@ class Load extends Phaser.Scene {
         this.load.image('coin', 'coin.jpg')
         this.load.image('stripe', 'road_stripe.png')
         this.load.image('bomb', 'bomb.png')
+        this.load.image('clothesline', 'clothesline.png')
     }
 
     create() {

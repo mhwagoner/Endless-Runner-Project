@@ -97,7 +97,7 @@ class Play extends Phaser.Scene {
         }
 
         //player bobbing
-        this.p1.y = Math.sin(this.gaitCounter/5)*5 + config.height -90
+        this.p1.y = Math.sin(this.gaitCounter/3)*5 + config.height -90
 
         //reset player bobbing timer
         if(this.gaitCounter <= this.gaitMax){
@@ -150,7 +150,7 @@ class Play extends Phaser.Scene {
                 break
             case 2:
                 //console.log("clothesline spawned")
-                this.SpawnPickup(config.width/2, this.skyHeight)
+                this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'clothesline', -5))
                 break
         }
     }

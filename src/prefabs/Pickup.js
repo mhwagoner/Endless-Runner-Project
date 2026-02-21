@@ -65,7 +65,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
             this.scale = (this.y + 60) / 250
         } else {
             this.scale = this.y / 250
-        }
+        }s
         if (this.y > this.minHeight) { //if leaving collectible range
             this.setDepth(11)
             this.setTint(0xff0000)
