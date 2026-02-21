@@ -109,6 +109,7 @@ class Play extends Phaser.Scene {
 
     update() {
         if(this.score >= 30) {
+            this.sound.stopAll()
             this.scene.start('winScene')
         }
         // make sure we step (ie update) the player's state machine
