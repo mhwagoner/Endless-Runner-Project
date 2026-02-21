@@ -1,7 +1,10 @@
 // Pickup prefab
 class Pickup extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, texture) {
+    constructor(scene, x, y, texture, value) {
         super(scene, x, y, texture) // call Sprite parent class
+
+        //set value
+        this.value = value
 
         this.scale = 0.1
         scene.add.existing(this)           // add Pickup to existing scene
@@ -13,7 +16,6 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(5)
         this.setToBack()
         this.position
-        this.value = 2
         this.maxHeight = config.height - 100
         this.minHeight = config.height - 90
         this.collectible = false

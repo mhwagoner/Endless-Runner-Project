@@ -82,11 +82,6 @@ class Play extends Phaser.Scene {
             return (pickup.collectible && ((pickup.position === "left" && this.keys.HKey.isDown) || (pickup.position === "right" && this.keys.FKey.isDown) || (pickup.position === "top" && this.keys.up.isDown)))
         })
 
-        //Layer ordering
-        //this.mainLayer = this.add.layer()
-        //this.mainLayer.add([this.pickups, this.p1, this.p2])
-        //this.mainLayer.sendToBack(this.pickups)
-
     }
 
     update() {
@@ -132,7 +127,7 @@ class Play extends Phaser.Scene {
         //this.stripes.scaleXY(0.0005*(config.speed/40))
         this.stripes.children.iterate((stripe) => {
             if(stripe.y > config.height) {
-                this.stripes.remove(this.stripes.stripe[0], true, true)
+                //this.stripes.remove(this.stripes.stripe[0], true, true) //not working!!!
             }
             stripe.scaleX = stripe.y / 1000
             stripe.scaleY = stripe.y / 1000
@@ -145,11 +140,13 @@ class Play extends Phaser.Scene {
         //console.log("object spawned")
         switch (Phaser.Math.Between(0, 2)) { //what is being spawned?
             case 0:
-                this.SpawnPickup(config.width/2, this.skyHeight)
+                //this.SpawnPickup(config.width/2, this.skyHeight)
+                this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'coin', 2))
                 break
             case 1:
-                //console.log("spike spawned")
-                this.SpawnPickup(config.width/2, this.skyHeight)
+                //console.log("bomb spawned")
+                //this.SpawnPickup(config.width/2, this.skyHeight)
+                this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'bomb', -2))
                 break
             case 2:
                 //console.log("clothesline spawned")
@@ -160,7 +157,7 @@ class Play extends Phaser.Scene {
 
     SpawnPickup(x, y, value) {
         //console.log("pickup spawned")
-        this.pickups.add(new Pickup(this, x, y, 'coin'))
+        this.pickups.add(new Pickup(this, x, y, 'coin', 2))
     }
 
     PickupPickup(player, pickup) {
