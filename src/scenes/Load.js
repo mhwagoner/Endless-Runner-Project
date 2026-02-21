@@ -6,7 +6,7 @@ class Load extends Phaser.Scene {
     preload() {
         // load the visual goodz
         this.load.path = './assets/'
-        this.load.spritesheet('player1', 'Temp_Spritesheet.png', {
+        this.load.spritesheet('player1', 'Miguel_Spritesheet.png', {
             frameWidth: 200,
             frameHeight: 200,
         })

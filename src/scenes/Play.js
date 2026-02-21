@@ -95,8 +95,23 @@ class Play extends Phaser.Scene {
         this.P1FSM.step()
         this.P1FSM.step()
 
-        this.p1.y = Math.sin(this.gaitCounter/5)*5 + config.height -95
+        //game speed increase
+        if(config.speed < 100) {
+            config.speed += 0.1
+            //console.log(config.speed)
+        }
 
+        //player bobbing
+        this.p1.y = Math.sin(this.gaitCounter/5)*5 + config.height -90
+
+        //reset player bobbing timer
+        if(this.gaitCounter <= this.gaitMax){
+            this.gaitCounter++
+        } else {
+            this.gaitCounter = 0
+        }
+
+        //spawn obstacles and pickups
         this.pickupTimer -= this.game.loop.delta
         if (this.pickupTimer <= 0) {
             this.ObjectSpawner()
@@ -106,20 +121,23 @@ class Play extends Phaser.Scene {
             this.pickupTimer = this.pickupTimerLength
         }
 
+        //spawn stripes
         this.stripeTimer -= this.game.loop.delta
         if (this.stripeTimer <= 0) {
             this.StripeSpawner()
-            this.stripeTimer = this.stripeTimerLength
+            this.stripeTimer = this.stripeTimerLength - (config.speed*20) + 800
         }
 
-        if(this.gaitCounter <= this.gaitMax){
-            this.gaitCounter++
-        } else {
-            this.gaitCounter = 0
-        }
-
-        //scale stripes
-        this.stripes.scaleXY(0.0005)
+        //stripe child updates
+        //this.stripes.scaleXY(0.0005*(config.speed/40))
+        this.stripes.children.iterate((stripe) => {
+            if(stripe.y > config.height) {
+                this.stripes.remove(this.stripes.stripe[0], true, true)
+            }
+            stripe.scaleX = stripe.y / 1000
+            stripe.scaleY = stripe.y / 1000
+            this.stripe.setVelocityY(config.speed)
+        })
 
     }
 
@@ -153,8 +171,14 @@ class Play extends Phaser.Scene {
 
     StripeSpawner(){
         this.stripe = this.physics.add.sprite(config.width/2, 0, 'stripe').setBelow(this.sky)
-        this.stripe.setVelocityY(40)
-        this.stripe.scale = 0.1
+        //this.stripe.setVelocityY(config.speed)
+        //this.stripe.scale = 0.1
         this.stripes.add(this.stripe)
+    }
+
+    StripeUpdater(stripe){    
+        stripe.scaleX = stripe.y / 1000
+        stripe.scaleY = stripe.y / 1000
+        this.stripe.setVelocityY(config.speed)
     }
 }

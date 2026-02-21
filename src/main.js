@@ -10,6 +10,7 @@ const config = {
     width: 700,
     height: 350,
     pixelArt: true,
+    speed: 40,
     zoom: 2,
     physics: {
         default: "arcade",

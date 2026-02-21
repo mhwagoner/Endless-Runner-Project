@@ -101,7 +101,7 @@ class HandsState extends State {
         } else if (up.isDown){ //up
 
             P1.anims.play('hand-up')
-            P1.body.setOffset((P1.width / 2) - (P1.body.width / 2), P1.height / 4)
+            P1.body.setOffset((P1.width / 2) - (P1.body.width / 2), P1.height / 6)
             P1.body.setSize(P1.width / 4, P1.height / 4, false)
 
         }

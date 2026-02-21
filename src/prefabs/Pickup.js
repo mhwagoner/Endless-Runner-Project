@@ -18,41 +18,41 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
         this.minHeight = config.height - 90
         this.collectible = false
 
-        this.setVelocityY(40)
+        this.setVelocityY(config.speed)
         
         switch (Phaser.Math.Between(0, 5)) { //direction of pickup movement
             case 0: //P2's left
                 this.position = "left"
-                this.setVelocityX(15)
+                this.setVelocityX(15*(config.speed/40))
                 break
             case 1: //P2's top
                 this.position = "top"
                 this.minHeight = config.height - 150
                 this.maxHeight = config.height - 160
-                this.setVelocityX(28)
+                this.setVelocityX(28*(config.speed/40))
                 //this.setVelocityY(30)
                 this.x += 35
                 break
             case 2: //P2's right
                 this.position = "right"
-                this.setVelocityX(35)
+                this.setVelocityX(35*(config.speed/40))
                 this.x += 65
                 break
             case 3: //P1's right
                 this.position = "right"
-                this.setVelocityX(-15)
+                this.setVelocityX(-15*(config.speed/40))
                 break
             case 4: //P1's top
                 this.position = "top"
                 this.minHeight = config.height - 150
                 this.maxHeight = config.height - 160
-                this.setVelocityX(-28)
+                this.setVelocityX(-28*(config.speed/40))
                 //this.setVelocityY(30)
                 this.x -= 35
                 break
             case 5: //P1's left
                 this.position = "left"
-                this.setVelocityX(-35)
+                this.setVelocityX(-35*(config.speed/40))
                 this.x -= 65
                 break
         }
