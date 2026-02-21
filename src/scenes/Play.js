@@ -6,8 +6,6 @@ class Play extends Phaser.Scene {
     create() {
         // add background image
         this.road = this.add.image(0, config.height / 5, 'road').setOrigin(0)
-       // this.road.scaleX = config.width / this.road.width *1.01
-        //this.road.scaleY = config.height / (this.road.height/2)
         this.graphicsSet = this.add.graphics({
             x: 0,
             y: 0,
@@ -22,30 +20,40 @@ class Play extends Phaser.Scene {
         this.skyHeight = config.height / 5
         this.sky = this.graphicsSet.fillRect(0, 0, config.width, this.skyHeight)
 
-        // add new Hero to scene (scene, x, y, key, frame)
-        this.p2 = new P1(this, config.width - 200, config.height-100, 'player2', 0)
+        //add music
+        this.bgm = this.sound.add('bgm', { 
+            loop: true, volume: 0.5 
+        })
+        this.bgm.play()
+
+        //add players
+        this.p2 = new P2(this, config.width - 200, config.height-100, 'player2', 0)
         this.p1 = new P1(this, 200, config.height-100, 'player1', 0)
         //can switch order of these lines later
         
         // setup keyboard input
         this.keys = this.input.keyboard.createCursorKeys()
-        this.keys.HKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
-        this.keys.FKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
+        this.keys.WKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
+        this.keys.AKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+        this.keys.SKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+        this.keys.DKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
 
         // debug key listener (assigned to D key)
-        this.input.keyboard.on('keydown-D', function() {
+        this.input.keyboard.on('keydown-Q', function() {
             this.physics.world.drawDebug = this.physics.world.drawDebug ? false : true
             this.physics.world.debugGraphic.clear()
         }, this)
+        this.physics.world.drawDebug = false
 
         // update instruction text
-        document.getElementById('info').innerHTML = '<strong>CharacterFSM.js:</strong> Arrows: move | D: debug (toggle)'
+        document.getElementById('info').innerHTML = '<strong>Endless Runner:</strong> Miguel: Move arms with WASD | Carlos: Move arms with arrow keys | Q: debug (toggle)'
         
         //variables
         this.score = 0
         this.stripeTimerLength = 1800
         this.stripeTimer = this.stripeTimerLength
 
+        //for player bobbing effect
         this.gaitCounter = 0
         this.gaitMax = 359
         
@@ -71,7 +79,7 @@ class Play extends Phaser.Scene {
             this.PickupPickup(p1, pickup)
         }, (p1, pickup) => {
             //if player is holding the right direction AND pickup.collectible
-            return (pickup.collectible && ((pickup.position === "left" && this.keys.left.isDown) || (pickup.position === "right" && this.keys.right.isDown) || (pickup.position === "top" && this.keys.up.isDown)))
+            return (!this.keys.SKey.isDown && pickup.unavoidable || (pickup.collectible && ((pickup.position === "left" && this.keys.AKey.isDown) || (pickup.position === "right" && this.keys.DKey.isDown) || (pickup.position === "top" && this.keys.WKey.isDown))))
         })
 
         //Player 2 collects pickups
@@ -79,16 +87,33 @@ class Play extends Phaser.Scene {
             this.PickupPickup(p2, pickup)
         }, (p2, pickup) => {
             //if player is holding the right direction AND pickup.collectible
-            return (pickup.collectible && ((pickup.position === "left" && this.keys.HKey.isDown) || (pickup.position === "right" && this.keys.FKey.isDown) || (pickup.position === "top" && this.keys.up.isDown)))
+            return (!this.keys.down.isDown && pickup.unavoidable || (pickup.collectible && ((pickup.position === "left" && this.keys.left.isDown) || (pickup.position === "right" && this.keys.right.isDown) || (pickup.position === "top" && this.keys.up.isDown))))
         })
+
+        // display score
+        this.scoreConfig = {
+            fontFamily: 'Lucida Console',
+            fontSize: '28px',
+            backgroundColor: '#eb9a0e',
+            color: '#1be0f1',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+            }
+            //fixedWidth: 60
+        }
+        this.scoreText = this.add.text(10, 10, `Score: ${this.score}`, this.scoreConfig)
 
     }
 
     update() {
-        //if(!this.gameOver){
+        if(this.score >= 30) {
+            this.scene.start('winScene')
+        }
         // make sure we step (ie update) the player's state machine
         this.P1FSM.step()
-        this.P1FSM.step()
+        this.P2FSM.step()
 
         //game speed increase
         if(config.speed < 100) {
@@ -98,6 +123,7 @@ class Play extends Phaser.Scene {
 
         //player bobbing
         this.p1.y = Math.sin(this.gaitCounter/3)*5 + config.height -90
+        this.p2.y = Math.sin(1+this.gaitCounter/3)*5 + config.height -90
 
         //reset player bobbing timer
         if(this.gaitCounter <= this.gaitMax){
@@ -110,7 +136,7 @@ class Play extends Phaser.Scene {
         this.pickupTimer -= this.game.loop.delta
         if (this.pickupTimer <= 0) {
             this.ObjectSpawner()
-            if (this.pickupTimerLength > 1000) {
+            if (this.pickupTimerLength > 500) { //timer shouldn't become faster than 500ms
                 this.pickupTimerLength -= 50
             }
             this.pickupTimer = this.pickupTimerLength
@@ -140,30 +166,43 @@ class Play extends Phaser.Scene {
         //console.log("object spawned")
         switch (Phaser.Math.Between(0, 2)) { //what is being spawned?
             case 0:
-                //this.SpawnPickup(config.width/2, this.skyHeight)
+                //spawn coin
                 this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'coin', 2))
                 break
             case 1:
-                //console.log("bomb spawned")
-                //this.SpawnPickup(config.width/2, this.skyHeight)
+                //spawn bomb
                 this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'bomb', -2))
                 break
             case 2:
-                //console.log("clothesline spawned")
-                this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'clothesline', -5))
+                //spawn clothesline OR coin
+                if(Phaser.Math.Between(0, 4) == 0) {
+                    this.pickups.add(new Clothesline(this, config.width/2, this.skyHeight, 'clothesline', -5))
+                } else {
+                    this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'coin', 2))
+                }
                 break
         }
     }
 
-    SpawnPickup(x, y, value) {
-        //console.log("pickup spawned")
-        this.pickups.add(new Pickup(this, x, y, 'coin', 2))
-    }
-
     PickupPickup(player, pickup) {
         this.score += pickup.value
+        if (pickup.value > 0) {
+            this.sound.play('sfx-coin')
+        } else if (player === this.p1) {
+            this.P1FSM.transition('hurt')
+            this.sound.play('sfx-bomb')
+        } else if (player === this.p2) {
+            this.P2FSM.transition('hurt')
+            this.sound.play('sfx-bomb')
+        }
         console.log(this.score)
-        pickup.destroy()
+        if(pickup.unavoidable && !this.keys.down.isDown) {
+            this.sound.play('sfx-bonk')
+            pickup.body.checkCollision.none = true
+        } else {
+            pickup.destroy()
+        }
+        this.scoreText.text = `Score: ${this.score}`
     }
 
     StripeSpawner(){

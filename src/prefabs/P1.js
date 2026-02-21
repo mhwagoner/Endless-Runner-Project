@@ -6,6 +6,7 @@ class P1 extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this)           // add P1 to existing scene
         scene.physics.add.existing(this)   // add physics body to scene
         this.body.setSize(this.width / 4, this.height / 4, true)
+        this.hurtTimer = 1000
 
         this.setDepth(10)
 
@@ -25,21 +26,23 @@ class IdleState extends State {
         P1.body.setSize(P1.width / 4, P1.height / 4, true)
         P1.anims.play('idle')
         P1.anims.stop()
-        //P1.setTint(0xFF0000)
     }
 
     execute(scene, P1) {
         // use destructuring to make a local copy of the keyboard object
-        const { left, right, up, down, space, shift } = scene.keys
+        const WKey = scene.keys.WKey
+        const AKey = scene.keys.AKey
+        const SKey = scene.keys.SKey
+        const DKey = scene.keys.DKey
 
         // transition to hands up if pressing a direction key
-        if(left.isDown || right.isDown || up.isDown) {
+        if(AKey.isDown || DKey.isDown || WKey.isDown) {
             this.stateMachine.transition('hands')
             return
         }
 
         // duck if down key pressed
-        if(Phaser.Input.Keyboard.JustDown(down)) {
+        if(Phaser.Input.Keyboard.JustDown(SKey)) {
             this.stateMachine.transition('duck')
             return
         }
@@ -48,57 +51,51 @@ class IdleState extends State {
 
 class HandsState extends State {
     execute(scene, P1) {
-        //P1.setTint(0x00FF00)
         // use destructuring to make a local copy of the keyboard object
-        const { left, right, up, down, space, shift } = scene.keys
-        const HKey = scene.keys.HKey
-        const FKey = scene.keys.FKey
+        const WKey = scene.keys.WKey
+        const AKey = scene.keys.AKey
+        const SKey = scene.keys.SKey
+        const DKey = scene.keys.DKey
 
-        /* transition to hurt if hitting obstacle
-        if(Phaser.Input.Keyboard.JustDown(space)) {
-            this.stateMachine.transition('swing')
-            return
-        }*/
-
-        if(down.isDown){
+        if(SKey.isDown){
             P1.anims.play('duck') //move hitbox
 
-        } else if (left.isDown && right.isDown && up.isDown){ //idle
+        } else if (AKey.isDown && DKey.isDown && WKey.isDown){ //idle
 
             this.stateMachine.transition('idle')
 
-        } else if (left.isDown && right.isDown){ //left and right
+        } else if (AKey.isDown && DKey.isDown){ //left and right
 
             P1.anims.play('hand-left-right')
             P1.body.setOffset((P1.width / 2) - (P1.body.width / 2), P1.height / 2)
             P1.body.setSize(P1.width, P1.height / 4, false)
             
 
-        } else if (left.isDown && up.isDown){ //left and up
+        } else if (AKey.isDown && WKey.isDown){ //left and up
 
             P1.anims.play('hand-left-up')
             P1.body.setOffset(0, P1.height / 6)
             P1.body.setSize(P1.width * 5/8, P1.height / 2, false)
 
-        } else if (right.isDown && up.isDown){ //right and up
+        } else if (DKey.isDown && WKey.isDown){ //right and up
 
             P1.anims.play('hand-right-up')
             P1.body.setOffset(P1.width * 3/8, P1.height / 6)
             P1.body.setSize(P1.width * 5/8, P1.height / 2, false)
 
-        } else if (left.isDown){ //left
+        } else if (AKey.isDown){ //left
 
             P1.anims.play('hand-left')
-            P1.body.setOffset(0, P1.height / 2)
+            P1.body.setOffset(0, (P1.height / 2) - (P1.body.height / 2))
             P1.body.setSize(P1.width / 4, P1.height / 4, false)
 
-        } else if (right.isDown){ //right
+        } else if (DKey.isDown){ //right
 
             P1.anims.play('hand-right')
-            P1.body.setOffset(P1.width - P1.body.width, P1.height / 2)
+            P1.body.setOffset(P1.width - P1.body.width, (P1.height / 2) - (P1.body.height / 2))
             P1.body.setSize(P1.width / 4, P1.height / 4, false)
 
-        } else if (up.isDown){ //up
+        } else if (WKey.isDown){ //up
 
             P1.anims.play('hand-up')
             P1.body.setOffset((P1.width / 2) - (P1.body.width / 2), P1.height / 6)
@@ -107,19 +104,16 @@ class HandsState extends State {
         }
 
         // transition to duck if pressing down key
-        if(Phaser.Input.Keyboard.JustDown(down)) {
+        if(Phaser.Input.Keyboard.JustDown(SKey)) {
             this.stateMachine.transition('duck')
             return
         }
 
         // transition to idle if not pressing movement keys
-        if(!(left.isDown || right.isDown || up.isDown || down.isDown)) {
+        if(!(AKey.isDown || DKey.isDown || WKey.isDown || SKey.isDown)) {
             this.stateMachine.transition('idle')
             return
         }
-
-        // handle hand movement
-
 
     }
 }
@@ -132,9 +126,10 @@ class DuckState extends State {
     }
 
     execute(scene, P1) {
-        const { down } = scene.keys
+        //const { down } = scene.keys
+        const SKey = scene.keys.SKey
         //if down isn't held, return to idle
-        if(!down.isDown) {
+        if(!SKey.isDown) {
             P1.body.enable = true;
             this.stateMachine.transition('idle')
         }
@@ -146,9 +141,11 @@ class HurtState extends State {
         P1.anims.play('duck')
         P1.anims.stop()
         P1.setTint(0xFF0000)     // turn red
+        P1.body.enable = false;
 
         // set recovery timer
         scene.time.delayedCall(P1.hurtTimer, () => {
+            P1.body.enable = true;
             P1.clearTint()
             this.stateMachine.transition('idle')
         })

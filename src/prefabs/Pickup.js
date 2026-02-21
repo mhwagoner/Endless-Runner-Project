@@ -32,7 +32,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
                 this.minHeight = config.height - 150
                 this.maxHeight = config.height - 160
                 this.setVelocityX(28*(config.speed/40))
-                //this.setVelocityY(30)
+                this.setTint(0xf0f000)
                 this.x += 35
                 break
             case 2: //P2's right
@@ -49,7 +49,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
                 this.minHeight = config.height - 150
                 this.maxHeight = config.height - 160
                 this.setVelocityX(-28*(config.speed/40))
-                //this.setVelocityY(30)
+                this.setTint(0xf0f000)
                 this.x -= 35
                 break
             case 5: //P1's left
@@ -65,16 +65,16 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
             this.scale = (this.y + 60) / 250
         } else {
             this.scale = this.y / 250
-        }s
+        }
         if (this.y > this.minHeight) { //if leaving collectible range
             this.setDepth(11)
-            this.setTint(0xff0000)
+            //this.setTint(0xff0000)
             this.collectible = false
 
         } else if (this.y > this.maxHeight) { //if within collectible range
             //console.log(this.scale)
             this.setDepth(5)
-            this.setTint(0x00ff00)
+            //this.setTint(0x00ff00)
             this.collectible = true
         }
         if (this.y > config.height + this.height) {
