@@ -4,6 +4,8 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+        this.winScore = 100
+
         // add background image
         this.road = this.add.image(0, config.height / 5, 'road').setOrigin(0)
         this.graphicsSet = this.add.graphics({
@@ -51,14 +53,15 @@ class Play extends Phaser.Scene {
         //variables
         this.score = 0
         this.stripeTimerLength = 1800
-        this.stripeTimer = this.stripeTimerLength
+        this.stripeTimer = 0//this.stripeTimerLength
+        this.grassBool = true
 
         //for player bobbing effect
         this.gaitCounter = 0
         this.gaitMax = 359
         
-        this.pickupTimerLength = 2000
-        this.pickupTimer = 3000
+        this.pickupTimerLength = 2000//2000
+        this.pickupTimer = 0//3000
 
         this.pickups = this.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
@@ -68,6 +71,12 @@ class Play extends Phaser.Scene {
         })
 
         this.stripes = this.add.group({
+            classType: Phaser.Physics.Sprite,
+            active: true,
+            maxSize: -1
+        })
+
+        this.grassStripes = this.add.group({
             classType: Phaser.Physics.Sprite,
             active: true,
             maxSize: -1
@@ -108,7 +117,7 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-        if(this.score >= 30) {
+        if(this.score >= this.winScore) {
             this.sound.stopAll()
             this.scene.start('winScene')
         }
@@ -137,7 +146,8 @@ class Play extends Phaser.Scene {
         this.pickupTimer -= this.game.loop.delta
         if (this.pickupTimer <= 0) {
             this.ObjectSpawner()
-            if (this.pickupTimerLength > 500) { //timer shouldn't become faster than 500ms
+            this.ObjectSpawner()
+            if (this.pickupTimerLength > 500) { //timer shouldn't become faster than 300ms (was 500)
                 this.pickupTimerLength -= 50
             }
             this.pickupTimer = this.pickupTimerLength
@@ -161,6 +171,16 @@ class Play extends Phaser.Scene {
             this.stripe.setVelocityY(config.speed)
         })
 
+        //grass child updates
+        this.grassStripes.children.iterate((grass) => {
+            if(grass.y > config.height) {
+                //this.grassStripes.remove(this.grassStripes.grass[0], true, true) //not working!!!
+            }
+            grass.scaleX = (grass.y  / 100) + 0.5
+            grass.scaleY = grass.y / 300
+            grass.setVelocityY(config.speed)
+        })
+
     }
 
     ObjectSpawner() {
@@ -168,7 +188,7 @@ class Play extends Phaser.Scene {
         switch (Phaser.Math.Between(0, 2)) { //what is being spawned?
             case 0:
                 //spawn coin
-                this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'coin', 2))
+                this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'coin', 1))
                 break
             case 1:
                 //spawn bomb
@@ -176,7 +196,7 @@ class Play extends Phaser.Scene {
                 break
             case 2:
                 //spawn clothesline OR coin
-                if(Phaser.Math.Between(0, 4) == 0) {
+                if(Phaser.Math.Between(0, 8) == 0) { //was 4
                     this.pickups.add(new Clothesline(this, config.width/2, this.skyHeight, 'clothesline', -5))
                 } else {
                     this.pickups.add(new Pickup(this, config.width/2, this.skyHeight, 'coin', 2))
@@ -208,9 +228,16 @@ class Play extends Phaser.Scene {
 
     StripeSpawner(){
         this.stripe = this.physics.add.sprite(config.width/2, 0, 'stripe').setBelow(this.sky)
+        this.grass = this.physics.add.sprite(config.width/2, -50, 'grass').setOrigin(0.5, 0.5).setToBack()
         //this.stripe.setVelocityY(config.speed)
         //this.stripe.scale = 0.1
         this.stripes.add(this.stripe)
+        if(this.grassBool) {
+            this.grassBool = false
+            this.grassStripes.add(this.grass)
+        } else {
+            this.grassBool = true
+        }
     }
 
     StripeUpdater(stripe){    

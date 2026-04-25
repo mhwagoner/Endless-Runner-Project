@@ -31,6 +31,7 @@ const config = {
             debug: true
         }
     },
+    backgroundColor: '#08770c',
     scene: [ Load, Title, Win, Play ]
 }
 

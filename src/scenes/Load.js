@@ -22,6 +22,7 @@ class Load extends Phaser.Scene {
         this.load.image('stripe', 'road_stripe.png')
         this.load.image('bomb', 'bomb.png')
         this.load.image('clothesline', 'clothesline.png')
+        this.load.image('grass', 'grass_stripe.png')
         //audio
         this.load.audio('sfx-bomb', 'bomb.wav')
         this.load.audio('sfx-coin', 'coin.wav')
